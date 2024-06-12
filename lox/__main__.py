@@ -1,9 +1,8 @@
-from lox.Lox import Lox
+import Lox
 import sys
 
-def main(args):
+def main(args) -> None:
     if (args.len > 1):
-        sys.stdout.write("Usage: jlox [script]")
-        sys.exit(64)
+        Lox.usage(64)
     elif (args.len == 1):
         Lox.run_file()
