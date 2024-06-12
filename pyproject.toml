@@ -1,4 +1,4 @@
 [tool.ruff] 
 line-length = 100
-ignore = ["D203"]
+ignore = ["D203", "F401"]
 show-source = true
