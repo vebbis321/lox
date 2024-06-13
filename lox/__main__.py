@@ -1,5 +1,6 @@
-from lox.lox import Lox
 import sys
+
+from lox.lox import Lox
 
 def main(args) -> None:
     if (len(args) > 1):

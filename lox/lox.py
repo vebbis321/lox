@@ -1,7 +1,7 @@
-from os import lockf, stat
 import sys
 from pathlib import Path
-from dataclasses import dataclass
+
+from lox.scanner import Scanner
 
 COMMANDS = {
     'exit': exit,
@@ -9,18 +9,6 @@ COMMANDS = {
     # 'copyright': lox_copyright,
     # 'license': lox_license,
 }
-
-@dataclass
-class Token:
-    token: str
-
-class Scanner:
-    def __init__(self, source: str) -> None:
-        pass
-
-    def scan_tokens(self) -> [Token]:
-        yes = Token("nois")
-        return [yes]
 
 class Lox:
     # i guess whis will be static
