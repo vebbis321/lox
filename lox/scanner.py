@@ -14,8 +14,19 @@ class Scanner:
     def __is_at_end(self) -> bool:
         return self.__current >= len(self.__source)
 
+    def __add_token(self, token_type: TokenType):
+        self.__add_token(token_type, None)
+
+    def __add_token(self, token_type: TokenType, literal: Any):
+        text = self.source[self.__start: self.__current]
+        self.__tokens.append(Token(token_type, text, literal, self.__line))
+
     def __scan_token(self):
-        pass
+        c = self.__advance()
+
+    match c:
+        case '(': __add_token()
+
         
     def scan_tokens(self) -> List[Token]:
         while not self.__is_at_end():
