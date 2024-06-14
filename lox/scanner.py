@@ -7,7 +7,7 @@ from lox.token_type import TokenType
 class Scanner:
     def __init__(self, source: str):
         self.__source = source
-        self.__tokens: List[Token]
+        self.__tokens: List[Token] = []
         self.__start: int = 0
         self.__current: int = 0
         self.__line: int = 1
