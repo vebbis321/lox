@@ -53,15 +53,6 @@ class Scanner:
             case '*': 
                 self.__add_token(TokenType.STAR)
 
-
-
-
-
-
-
-
-
-
         
     def scan_tokens(self) -> List[Token]:
         while not self.__is_at_end():

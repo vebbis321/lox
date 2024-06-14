@@ -1,4 +1,6 @@
+from posix import write
 import sys
+import os
 from pathlib import Path
 
 from lox.scanner import Scanner
@@ -17,11 +19,12 @@ class Lox:
 
 
     @staticmethod 
-    def usage() -> None:
-        sys.stdout.write("Usage: jlox [script]")
+    def usage(code: int) -> None:
+        # I guess I could do the print but...
+        sys.stdout.write("Usage: jlox [script]\n")
 
         # error: command line usage error
-        sys.exit(64)
+        sys.exit(code)
 
     @staticmethod    
     def run_file(filename) -> None:
@@ -31,6 +34,7 @@ class Lox:
         # reads the file and closes
         source = path.read_text(encoding='utf-8', errors='strict')
         
+        # we have it, let's do some lexical analysis
         Lox.run(source)
 
         # indicate an error in the exit code
@@ -39,7 +43,10 @@ class Lox:
 
     @staticmethod
     def run(source: str) -> None:
+        # pass the source of the file to the lexer
         scanner = Scanner(source)
+
+        # get the tokens from the lexer
         tokens = scanner.scan_tokens()
 
         for token in tokens:
@@ -53,14 +60,16 @@ class Lox:
     @staticmethod
     def report(line: int, where: str, message: str) -> None:
         print(f'[line {line}] Error{where}: {message}')
+        
+        Lox.had_error = True
 
     @staticmethod
     def run_prompt() -> None:
 
-        # repl: read, evaluate, print, loop
+        # REPL time
         while True:
             try:
-                # a classic repl prompt
+                # a classic REPL prompt
                 print('>>> ', end='')
 
                 # gets the user input
@@ -79,8 +88,13 @@ class Lox:
                     Lox.run(expr)
                     Lox.had_error = False
 
-            except KeyboardInterrupt as ki:
-                print(f"KeyboardInterrupt deez nutz with err: {ki}")
+            # nois
+            except KeyboardInterrupt:
+                print(' Error: KeyboardInterrupt')
+                try:
+                    sys.exit(130)
+                except SystemExit:
+                    os._exit(130)
 
             # End of file error...I guess it's when nothing is passed
             except EOFError:
