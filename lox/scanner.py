@@ -97,6 +97,14 @@ class Scanner:
                 else:
                     self.__add_token(TokenType.SLASH)
 
+            # TODO: I may have to get rid of switch statements. It's supposed to be a fall through
+            # here
+            case ' ' | '\r' | '\t' : 
+                return
+
+            case '\n':
+                self.__line += 1
+
             # why don't they just use default???
             # handling the error case
             # NOTE: we also keep going, so we can handle further errors in the program, buuut we
