@@ -87,6 +87,16 @@ class Scanner:
             case '>':
                 self.__add_token(self.__compare('=') if TokenType.GREATER_EQUAL else TokenType.GREATER)
 
+            case '/':
+                # it is a comment
+                if self.__compare('/'):
+                    #a comment goes to the end of line
+                    while (self.__peek() != '\n') and (self.__is_at_end() is False):
+                        self.__advance()
+                # otherwise it is the divider
+                else:
+                    self.__add_token(TokenType.SLASH)
+
             # why don't they just use default???
             # handling the error case
             # NOTE: we also keep going, so we can handle further errors in the program, buuut we
