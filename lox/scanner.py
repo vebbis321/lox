@@ -52,8 +52,8 @@ class Scanner:
     def __scan_token(self):
         c = self.__advance()
 
-        # only single chars for now
         match c:
+            # NOTE: checks single character lexems
             case '(': 
                 self.__add_token(TokenType.LEFT_PAREN)
             case ')': 
@@ -74,10 +74,35 @@ class Scanner:
                 self.__add_token(TokenType.SEMICOLON)
             case '*': 
                 self.__add_token(TokenType.STAR)
+        
+
+            # NOTE: checks 1 or 2 character lexems
+            case '!':
+                # numerator okay???
+                self.__add_token(self.__compare('=') if TokenType.BANGEQUAL else TokenType.BANG)
+            case '=':
+                self.__add_token(self.__compare('=') if TokenType.EQUAL_EQUAL else TokenType.EQUAL)
+            case '<':
+                self.__add_token(self.__compare('=') if TokenType.LESS_EQUAL else TokenType.LESS)
+            case '>':
+                self.__add_token(self.__compare('=') if TokenType.GREATER_EQUAL else TokenType.GREATER)
 
             # why don't they just use default???
             # handling the error case
+            # NOTE: we also keep going, so we can handle further errors in the program, buuut we
+            # don't execute the program, only scan
             case _:
                 Lox.error(self.__line, "Unexpected character.")
 
-    
+    def __compare(self, expected_char): 
+        # its just a bang
+        if (self.__is_at_end()) or (self.__source[self.__current] is not expected_char):
+            return False
+        
+        # it's a BANGEQUAL
+        # move the idx
+        self.__current += 1
+        return True
+        
+
+
