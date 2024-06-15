@@ -113,6 +113,14 @@ class Scanner:
         # move the idx
         self.__current += 1
         return True
+
+    def __peek(self) -> str:
+        if self.__is_at_end():
+            # lol string and arrays in C
+            return '\0'
+        return self.__source[self.__current]
+         
+    
         
 
 
