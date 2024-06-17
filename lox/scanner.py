@@ -1,8 +1,8 @@
 from typing import List, Union, Any, Optional
 
-from lox.lox import Lox
 from lox.token import Token
 from lox.token_type import TokenType
+from lox.lox import Lox
 
 class Scanner:
     # init the source code with the starting point 
@@ -97,7 +97,7 @@ class Scanner:
                 else:
                     self.__add_token(TokenType.SLASH)
 
-            # TODO: I may have to get rid of switch statements. It's supposed to be a fall through
+            # TODO: I may have to get rid of match statements. It's supposed to be a fall through
             # here
             case ' ' | '\r' | '\t' : 
                 return
@@ -105,12 +105,51 @@ class Scanner:
             case '\n':
                 self.__line += 1
 
+            case '"':
+                self.__string()
+
+            case int():
+                self.__number()
+
             # why don't they just use default???
             # handling the error case
             # NOTE: we also keep going, so we can handle further errors in the program, buuut we
             # don't execute the program, only scan
             case _:
                 Lox.error(self.__line, "Unexpected character.")
+
+    def __consume_digits(self):
+        while self.__peek().isdigit():
+            self.__advance()
+
+    def __number(self):
+        self.__consume_digits()
+
+        # time to look for fractions
+        if (self.__peek() == '.') and (self.__peek_next().isdigit()):
+
+            # consume the .
+            self.__advance()
+
+            # keep consuming the next digits
+            self.__consume_digits()
+
+        self.__add_single_len_token(self.__source[self.__start: self.__current])
+
+    def __string(self):
+        while (self.__peek() != '"') and (not self.__is_at_end()):
+            if self.__peek() == '\n':
+                self.__line +=1
+            self.__advance()
+
+        if self.__is_at_end():
+            Lox.error(self.__line, "Unterminated string.")
+            return
+        
+        self.__advance() # the closing "
+
+        value = self.__source[self.__start + 1, self.__current - 1]
+        self.__add_single_len_token(TokenType.STRING, value)
 
     def __compare(self, expected_char): 
         # its just a bang
@@ -128,6 +167,12 @@ class Scanner:
             return '\0'
         return self.__source[self.__current]
          
+    def __peek_next(self) -> str:
+        if (self.__current + 1) >= len(self.__source):
+            return '\0'
+        return self.__source[self.__current + 1]
+
+
     
         
 
