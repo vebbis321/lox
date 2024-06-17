@@ -2,7 +2,6 @@ from typing import List, Union, Any, Optional
 
 from lox.token import Token
 from lox.token_type import TokenType
-from lox.lox import Lox
 
 class Scanner:
     # init the source code with the starting point 
@@ -91,7 +90,7 @@ class Scanner:
                 # it is a comment
                 if self.__compare('/'):
                     #a comment goes to the end of line
-                    while (self.__peek() != '\n') and (self.__is_at_end() is False):
+                    while (self.__peek() != '\n') and (not self.__is_at_end()):
                         self.__advance()
                 # otherwise it is the divider
                 else:
@@ -116,7 +115,8 @@ class Scanner:
             # NOTE: we also keep going, so we can handle further errors in the program, buuut we
             # don't execute the program, only scan
             case _:
-                Lox.error(self.__line, "Unexpected character.")
+                raise SyntaxError(f'Unexpected character "{c}" at '
+                              f'line {self.__line}')
 
     def __consume_digits(self):
         while self.__peek().isdigit():
@@ -143,7 +143,7 @@ class Scanner:
             self.__advance()
 
         if self.__is_at_end():
-            Lox.error(self.__line, "Unterminated string.")
+            raise SyntaxError(f'Unterminated string at line: {self.__line}')
             return
         
         self.__advance() # the closing "
