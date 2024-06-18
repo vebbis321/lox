@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 
 from lox.scanner import Scanner
+from lox.token_type import TokenType
 
 COMMANDS = {
     'exit': exit,
@@ -47,7 +48,7 @@ class Lox:
         scanner = Scanner(source)
 
         # get the tokens from the lexer
-        tokens = scanner.scan_tokens()
+        tokens: [TokenType] = scanner.scan_tokens()
 
         for token in tokens:
             print(token)

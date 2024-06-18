@@ -2,6 +2,7 @@ from typing import List, Union, Any, Optional
 
 from lox.token import Token
 from lox.token_type import TokenType
+from lox.keywords import keywords
 
 class Scanner:
     # init the source code with the starting point 
@@ -47,6 +48,7 @@ class Scanner:
 
         # the last token is of course EOF
         self.__tokens.append(Token(TokenType.EOF, TokenType.EOF.value, None, self.__line))
+        return self.__tokens
 
     def __scan_token(self):
         c = self.__advance()
@@ -110,6 +112,9 @@ class Scanner:
             case int():
                 self.__number()
 
+            case str():
+                self.__identifier()
+
             # why don't they just use default???
             # handling the error case
             # NOTE: we also keep going, so we can handle further errors in the program, buuut we
@@ -117,6 +122,14 @@ class Scanner:
             case _:
                 raise SyntaxError(f'Unexpected character "{c}" at '
                               f'line {self.__line}')
+
+    def __identifier(self):
+        while self.__peek().isalnum():
+            self.__advance()
+
+        text: str = self.__source[self.__start: self.__current]
+        typ: TokenType = keywords.get(text, TokenType.IDENTIFIER)
+        self.__add_token(typ)
 
     def __consume_digits(self):
         while self.__peek().isdigit():
@@ -178,8 +191,6 @@ class Scanner:
         if (self.__current + 1) >= len(self.__source):
             return '\0'
         return self.__source[self.__current + 1]
-
-
     
         
 
