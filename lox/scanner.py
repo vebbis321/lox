@@ -134,7 +134,11 @@ class Scanner:
             # keep consuming the next digits
             self.__consume_digits()
 
-        self.__add_single_len_token(self.__source[self.__start: self.__current])
+        int_to_float = self.__source[self.__start: self.__current]
+        self.__add_single_len_token(
+            TokenType.NUMBER,
+            int_to_float
+        )
 
     def __string(self):
         while (self.__peek() != '"') and (not self.__is_at_end()):
@@ -149,7 +153,10 @@ class Scanner:
         self.__advance() # the closing "
 
         value = self.__source[self.__start + 1, self.__current - 1]
-        self.__add_single_len_token(TokenType.STRING, value)
+        self.__add_single_len_token(
+            TokenType.STRING,
+            value
+        )
 
     def __compare(self, expected_char): 
         # its just a bang
