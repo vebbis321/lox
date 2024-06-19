@@ -154,18 +154,22 @@ class Scanner:
         )
 
     def __string(self):
+        # while current is not equal to the end of the str
+        # and not at the end of source
         while (self.__peek() != '"') and (not self.__is_at_end()):
             if self.__peek() == '\n':
                 self.__line +=1
             self.__advance()
 
+        # we can't be at end before enclosing, raise error
         if self.__is_at_end():
             raise SyntaxError(f'Unterminated string at line: {self.__line}')
             return
         
         self.__advance() # the closing "
 
-        value = self.__source[self.__start + 1, self.__current - 1]
+        # the +1 and -1 is because we strip of "", because they are tokens by themselves
+        value: str = self.__source[(self.__start + 1): (self.__current - 1)]
         self.__add_single_len_token(
             TokenType.STRING,
             value
@@ -181,13 +185,17 @@ class Scanner:
         self.__current += 1
         return True
 
+    # peeking at the current char
     def __peek(self) -> str:
         if self.__is_at_end():
             # lol string and arrays in C
+            # if we're at the end, add a enclosing char
             return '\0'
         return self.__source[self.__current]
          
+    # peeking at the next char
     def __peek_next(self) -> str:
+        # only peek if the next is not at the end
         if (self.__current + 1) >= len(self.__source):
             return '\0'
         return self.__source[self.__current + 1]
