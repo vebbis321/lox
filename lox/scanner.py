@@ -1,3 +1,4 @@
+from os import sync
 from typing import List, Union, Any, Optional
 
 from lox.token import Token
@@ -23,10 +24,10 @@ class Scanner:
         # TODO: Speeeed
         return self.__current >= len(self.__source)
     
-    def __advance(self) -> str:
+    def __advance(self, step: int = 1) -> str:
         current_char = self.__source[self.__current]
         # why aren't there post- and pre-increments???
-        self.__current += 1
+        self.__current += step
         return current_char
         
 
@@ -94,9 +95,20 @@ class Scanner:
             case '/':
                 # it is a comment
                 if self.__compare('/'):
-                    #a comment goes to the end of line
+                    # a comment goes to the end of line
                     while (self.__peek() != '\n') and (not self.__is_at_end()):
                         self.__advance()
+
+                # it is a multi line comment!
+                elif self.__compare('*'):
+
+                    self.__consume_text('*')
+                    if self.__peek() == '*' and self.__peek_next() == "/":
+                        self.__advance(2)
+                    elif self.__peek() != '"':
+                        raise SyntaxError(f'Character not enclosed at line: {self.__line}')
+                        return
+
                 # otherwise it is the divider
                 else:
                     self.__add_token_without_literal(TokenType.SLASH)
@@ -110,7 +122,7 @@ class Scanner:
                 self.__line += 1
 
             case '"':
-                self.__string()
+                self.__str()
 
 
             case char:
@@ -151,21 +163,19 @@ class Scanner:
             TokenType.NUMBER,
             int_to_float
         )
-
-    def __string(self):
-        # while current is not equal to the end of the str
-        # and not at the end of source
-        while (self.__peek() != '"') and (not self.__is_at_end()):
-            if self.__peek() == '\n':
-                self.__line +=1
-            self.__advance()
+    def __str(self):
+        self.__consume_text('"')
 
         # we can't be at end before enclosing, raise error
         if self.__is_at_end():
             raise SyntaxError(f'Unterminated string at line: {self.__line}')
             return
-        
-        self.__advance() # the closing "
+
+        if self.__peek() != '"':
+            raise SyntaxError(f'Character not enclosed at line: {self.__line}')
+            return
+
+        self.__advance() # the closing " or *
 
         # the +1 and -1 is because we strip of "", because they are tokens by themselves
         value: str = self.__source[(self.__start + 1): (self.__current - 1)]
@@ -173,6 +183,15 @@ class Scanner:
             TokenType.STRING,
             value
         )
+
+    def __consume_text(self, enclosing_char: str):
+        # while current is not equal to the end of the str
+        # and not at the end of source
+        while (self.__peek() != enclosing_char) and (not self.__is_at_end()):
+            if self.__peek() == '\n':
+                self.__line +=1
+            self.__advance()
+
 
     def __compare(self, expected_char): 
         # its just a bang
