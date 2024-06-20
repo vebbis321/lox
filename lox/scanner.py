@@ -7,10 +7,14 @@ from lox.keywords import keywords
 class Scanner:
     # init the source code with the starting point 
     def __init__(self, source: str):
-        self.__source = source
+        self.__source: str = source
         self.__tokens: List[Token] = []
+
+        # current char in the lexeme
         self.__start: int = 0
+        # char being considered in the lexeme
         self.__current: int = 0
+
         self.__line: int = 1
 
 
@@ -20,28 +24,27 @@ class Scanner:
         return self.__current >= len(self.__source)
     
     def __advance(self) -> str:
-        c = self.__source[self.__current]
+        current_char = self.__source[self.__current]
         # why aren't there post- and pre-increments???
         self.__current += 1
-        return c
+        return current_char
         
 
-    def __add_token(self, typ: TokenType):
+    def __add_token_without_literal(self, typ: TokenType):
         # no literal
-        self.__add_single_len_token(typ, None)
+        self.__add_token(typ, None)
 
-    def __add_single_len_token(self, typ: TokenType, literal: Any):
+    def __add_token(self, typ: TokenType, literal: Any):
         text = self.__source[self.__start: self.__current]
         self.__tokens.append(Token(typ, text, literal, self.__line))
 
     # public
     def scan_tokens(self) -> List[Token]:
-        '''
-         while we are not at the end
-         scan each character
-         check the lexeme
-         use it to add a token to our list of tokens
-        '''
+
+        # while we are not at the end
+        # scan each character
+        # check the lexeme
+        # use it to add a token to our list of tokens
         while not self.__is_at_end():
             self.__start = self.__current
             self.__scan_token()
@@ -56,37 +59,37 @@ class Scanner:
         match c:
             # NOTE: checks single character lexems
             case '(': 
-                self.__add_token(TokenType.LEFT_PAREN)
+                self.__add_token_without_literal(TokenType.LEFT_PAREN)
             case ')': 
-                self.__add_token(TokenType.RIGHT_PAREN)
+                self.__add_token_without_literal(TokenType.RIGHT_PAREN)
             case '{': 
-                self.__add_token(TokenType.LEFT_BRACE)
+                self.__add_token_without_literal(TokenType.LEFT_BRACE)
             case '}': 
-                self.__add_token(TokenType.RIGHT_BRACE)
+                self.__add_token_without_literal(TokenType.RIGHT_BRACE)
             case ',': 
-                self.__add_token(TokenType.COMMA)
+                self.__add_token_without_literal(TokenType.COMMA)
             case '.': 
-                self.__add_token(TokenType.DOT)
+                self.__add_token_without_literal(TokenType.DOT)
             case '-': 
-                self.__add_token(TokenType.MINUS)
+                self.__add_token_without_literal(TokenType.MINUS)
             case '+': 
-                self.__add_token(TokenType.PLUS)
+                self.__add_token_without_literal(TokenType.PLUS)
             case ';': 
-                self.__add_token(TokenType.SEMICOLON)
+                self.__add_token_without_literal(TokenType.SEMICOLON)
             case '*': 
-                self.__add_token(TokenType.STAR)
+                self.__add_token_without_literal(TokenType.STAR)
         
 
             # NOTE: checks 1 or 2 character lexems
             case '!':
                 # numerator okay???
-                self.__add_token(self.__compare('=') if TokenType.BANGEQUAL else TokenType.BANG)
+                self.__add_token_without_literal(self.__compare('=') if TokenType.BANGEQUAL else TokenType.BANG)
             case '=':
-                self.__add_token(self.__compare('=') if TokenType.EQUAL_EQUAL else TokenType.EQUAL)
+                self.__add_token_without_literal(self.__compare('=') if TokenType.EQUAL_EQUAL else TokenType.EQUAL)
             case '<':
-                self.__add_token(self.__compare('=') if TokenType.LESS_EQUAL else TokenType.LESS)
+                self.__add_token_without_literal(self.__compare('=') if TokenType.LESS_EQUAL else TokenType.LESS)
             case '>':
-                self.__add_token(self.__compare('=') if TokenType.GREATER_EQUAL else TokenType.GREATER)
+                self.__add_token_without_literal(self.__compare('=') if TokenType.GREATER_EQUAL else TokenType.GREATER)
 
             case '/':
                 # it is a comment
@@ -96,7 +99,7 @@ class Scanner:
                         self.__advance()
                 # otherwise it is the divider
                 else:
-                    self.__add_token(TokenType.SLASH)
+                    self.__add_token_without_literal(TokenType.SLASH)
 
             # TODO: I may have to get rid of match statements. It's supposed to be a fall through
             # here
@@ -129,7 +132,7 @@ class Scanner:
 
         text: str = self.__source[self.__start: self.__current]
         typ: TokenType = keywords.get(text, TokenType.IDENTIFIER)
-        self.__add_token(typ)
+        self.__add_token_without_literal(typ)
 
     def __consume_digits(self):
         while self.__peek().isdigit():
@@ -148,7 +151,7 @@ class Scanner:
             self.__consume_digits()
 
         int_to_float = self.__source[self.__start: self.__current]
-        self.__add_single_len_token(
+        self.__add_token(
             TokenType.NUMBER,
             int_to_float
         )
@@ -170,7 +173,7 @@ class Scanner:
 
         # the +1 and -1 is because we strip of "", because they are tokens by themselves
         value: str = self.__source[(self.__start + 1): (self.__current - 1)]
-        self.__add_single_len_token(
+        self.__add_token(
             TokenType.STRING,
             value
         )
