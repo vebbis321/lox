@@ -83,13 +83,13 @@ class Scanner:
             # NOTE: checks 1 or 2 character lexems
             case '!':
                 # numerator okay???
-                self.__add_token_without_literal(self.__compare('=') if TokenType.BANG_EQUAL else TokenType.BANG)
+                self.__add_token_without_literal(TokenType.BANG_EQUAL if self.__compare('=') else TokenType.BANG)
             case '=':
-                self.__add_token_without_literal(self.__compare('=') if TokenType.EQUAL_EQUAL else TokenType.EQUAL)
-            case '<':
-                self.__add_token_without_literal(self.__compare('=') if TokenType.LESS_EQUAL else TokenType.LESS)
-            case '>':
-                self.__add_token_without_literal(self.__compare('=') if TokenType.GREATER_EQUAL else TokenType.GREATER)
+                self.__add_token_without_literal(TokenType.EQUAL_EQUAL if self.__compare('=') else TokenType.EQUAL)
+            case '<':                                                 
+                self.__add_token_without_literal(TokenType.LESS_EQUAL if self.__compare('=') else TokenType.LESS)
+            case '>':                                                 
+                self.__add_token_without_literal(TokenType.GREATER_EQUAL if self.__compare('=') else TokenType.GREATER)
 
             case '/':
                 # it is a comment
