@@ -83,7 +83,7 @@ class Scanner:
             # NOTE: checks 1 or 2 character lexems
             case '!':
                 # numerator okay???
-                self.__add_token_without_literal(self.__compare('=') if TokenType.BANGEQUAL else TokenType.BANG)
+                self.__add_token_without_literal(self.__compare('=') if TokenType.BANG_EQUAL else TokenType.BANG)
             case '=':
                 self.__add_token_without_literal(self.__compare('=') if TokenType.EQUAL_EQUAL else TokenType.EQUAL)
             case '<':
@@ -123,6 +123,7 @@ class Scanner:
             # NOTE: we also keep going, so we can handle further errors in the program, buuut we
             # don't execute the program, only scan
             case _:
+                print("yooo")
                 raise SyntaxError(f'Unexpected character "{c}" at '
                               f'line {self.__line}')
 
