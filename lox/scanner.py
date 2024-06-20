@@ -112,20 +112,15 @@ class Scanner:
             case '"':
                 self.__string()
 
-            case int():
-                self.__number()
 
-            case str():
-                self.__identifier()
-
-            # why don't they just use default???
-            # handling the error case
-            # NOTE: we also keep going, so we can handle further errors in the program, buuut we
-            # don't execute the program, only scan
-            case _:
-                print("yooo")
-                raise SyntaxError(f'Unexpected character "{c}" at '
-                              f'line {self.__line}')
+            case char:
+                if char.isalpha():
+                    self.__identifier()
+                elif char.isnumeric():
+                    self.__number()
+                else:
+                    raise SyntaxError(f'Unexpected character "{c}" at '
+                                  f'line {self.__line}')
 
     def __identifier(self):
         while self.__peek().isalnum():
