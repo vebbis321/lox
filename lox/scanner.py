@@ -146,6 +146,14 @@ class Scanner:
         while self.__peek().isdigit():
             self.__advance()
 
+    def __consume_text(self, enclosing_char: str):
+        # while current is not equal to the end of the str
+        # and not at the end of source
+        while (self.__peek() != enclosing_char) and (not self.__is_at_end()):
+            if self.__peek() == '\n':
+                self.__line +=1
+            self.__advance()
+
     def __number(self):
         self.__consume_digits()
 
@@ -184,13 +192,6 @@ class Scanner:
             value
         )
 
-    def __consume_text(self, enclosing_char: str):
-        # while current is not equal to the end of the str
-        # and not at the end of source
-        while (self.__peek() != enclosing_char) and (not self.__is_at_end()):
-            if self.__peek() == '\n':
-                self.__line +=1
-            self.__advance()
 
 
     def __compare(self, expected_char): 
